@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('consular_requests', function (Blueprint $table) {
-            $table->id();
+            $table->id('request_id'); 
+            
+            $table->foreignId('citizen_id')->constrained('citizens', 'citizen_id')->onDelete('cascade');
+            
+            $table->string('request_type');
+            $table->string('request_status');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('consular_requests');
