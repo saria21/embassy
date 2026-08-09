@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('consular_requests', function (Blueprint $table) {
             $table->id('request_id'); 
-            
             $table->foreignId('citizen_id')->constrained('citizens', 'citizen_id')->onDelete('cascade');
             
             $table->string('request_type');

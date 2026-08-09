@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\staff;
+use App\Models\department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,8 +18,13 @@ class StaffFactory extends Factory
      */
     public function definition(): array
     {
+        $fullName = fake()->name();
+
         return [
-            //
+            "full_name" => $fullName,
+            "job_title" => fake()->jobTitle(),
+            "role" => fake()->randomElement(["Admin", "Interviewer", "Security", "Consular Officer"]),
+            "department_id" => department::factory(),
         ];
     }
 }

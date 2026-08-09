@@ -18,7 +18,11 @@ class VisaApplicationsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            "visa_type" => fake()->randomElement(["Tourist", "Business", "Student", "Work"]),
+            "application_status" => fake()->randomElement(["Pending", "Approved", "Rejected"]),
+            
+            // This cleanly spins up the required parent applicant record on the fly
+            "applicant_id" => \App\Models\visa_applicants::factory(),
         ];
     }
 }

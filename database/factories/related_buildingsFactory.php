@@ -1,14 +1,14 @@
 <?php
+
 namespace Database\Factories;
 
-use App\Models\department;
 use App\Models\related_buildings;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<department>
- */
-class DepartmentFactory extends Factory
+
+// @extends Factory<related_buildings>
+ 
+class related_buildingsFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,8 +20,7 @@ class DepartmentFactory extends Factory
         $name = fake()->unique()->word();
 
         return [
-            "name" => ucfirst($name) . " Section",
-            "building_id" => related_buildings::factory(),
+            "name" => ucfirst($name) . " Building",
         ];
     }
 }
