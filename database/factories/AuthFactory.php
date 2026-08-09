@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\auth;
+use App\Models\auths;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<auth>
+ * @extends Factory<auths>
  */
 class AuthFactory extends Factory
 {
@@ -18,7 +18,12 @@ class AuthFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            // Automatically creates a staff relation row to back this account
+            "staff_id" => \App\Models\staff::factory(),
+            
+            // Generates official embassy-style username strings (e.g. j.doe@embassy.gov)
+            "username" => fake()->unique()->userName() . "@embassy.gov",
+            "password" => bcrypt('password123'), // Secure default testing password
         ];
     }
 }
