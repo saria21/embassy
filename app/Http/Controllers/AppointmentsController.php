@@ -2,65 +2,90 @@
 
 namespace App\Http\Controllers;
 
+// Import the correct appointments model and validation request layers from your project
 use App\Models\appointments;
 use App\Http\Requests\StoreappointmentsRequest;
 use App\Http\Requests\UpdateappointmentsRequest;
+use Illuminate\Http\JsonResponse;
 
 class AppointmentsController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * GET /api/appointments
+     * Fetch and return a list of all booked embassy appointments.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
+        // Eager load the 'citizen' and 'staff' relations to prevent N+1 database queries
+        $bookings = appointments::with(['citizen', 'staff'])->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $bookings
+        ], 200); // Standard HTTP 200 OK status
     }
 
     /**
-     * Show the form for creating a new resource.
+     * POST /api/appointments
+     * Validate and create a new embassy visitation slot entry.
      */
-    public function create()
+    public function store(StoreappointmentsRequest $request): JsonResponse
     {
-        //
+        // Safe data extraction via Laravel's request validation block
+        $validated = $request->validated();
+        $booking = appointments::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Embassy appointment booked successfully inside the scheduling calendar.',
+            'data' => $booking
+        ], 211); // Custom status code for tracking logs
     }
 
     /**
-     * Store a newly created resource in storage.
+     * GET /api/appointments/{id}
+     * Display profile details for one singular targeted visitation record.
      */
-    public function store(StoreappointmentsRequest $request)
+    public function show(appointments $appointments): JsonResponse
     {
-        //
+        // Dynamically load the associated relationships side-by-side
+        $appointments->load(['citizen', 'staff']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $appointments
+        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * PUT/PATCH /api/appointments/{id}
+     * Update scheduling configurations on a live appointment entry.
      */
-    public function show(appointments $appointments)
+    public function update(UpdateappointmentsRequest $request, appointments $appointments): JsonResponse
     {
-        //
+        // Pull only verified column parameters to protect against mass-assignment vulnerabilities
+        $validated = $request->validated();
+        $appointments->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Appointment details modified successfully in system schedule.',
+            'data' => $appointments
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * DELETE /api/appointments/{id}
+     * Completely remove a target appointment out of active scheduling calendars.
      */
-    public function edit(appointments $appointments)
+    public function destroy(appointments $appointments): JsonResponse
     {
-        //
-    }
+        // Delete the entry cleanly out of the active SQLite table view
+        $appointments->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateappointmentsRequest $request, appointments $appointments)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(appointments $appointments)
-    {
-        //
+        return response()->json([
+            'success' => true,
+            'message' => 'Embassy appointment reservation removed permanently from system.'
+        ], 200);
     }
 }
