@@ -12,7 +12,8 @@ class StoredepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED: Allows the API to accept incoming new department configurations
+        return true;
     }
 
     /**
@@ -23,7 +24,11 @@ class StoredepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Ensures this sector is mapped back to a valid physical building/facility record
+            "building_id" => ["required", "integer", "exists:related_buildings,building_id"],
+
+            // 🟢 Forces strict string properties for official embassy segment tracking names
+            "department_name" => ["required", "string", "max:255"],
         ];
     }
 }

@@ -12,7 +12,8 @@ class StorestaffRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED: Allows the API to accept incoming new staff registrations
+        return true;
     }
 
     /**
@@ -23,7 +24,15 @@ class StorestaffRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Ensures this employee is assigned to an existing, valid structural department division
+            "department_id" => ["required", "integer", "exists:departments,department_id"],
+
+            // 🟢 Standard layout parameters for the employee's legal name title
+            "first_name" => ["required", "string", "max:100"],
+            "last_name" => ["required", "string", "max:100"],
+
+            // 🟢 Validates that their tracking assignment role strictly matches your physical embassy permission paths
+            "role" => ["required", "string", "in:Security Guard,Visa Officer,Consular Officer,Interviewer,Ambassador"],
         ];
     }
 }

@@ -12,7 +12,8 @@ class UpdatestaffRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
 
     /**
@@ -23,7 +24,11 @@ class UpdatestaffRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Swaps "required" for "sometimes" to handle partial employee record shifts safely
+            "department_id" => ["sometimes", "integer", "exists:departments,department_id"],
+            "first_name" => ["sometimes", "string", "max:100"],
+            "last_name" => ["sometimes", "string", "max:100"],
+            "role" => ["sometimes", "string", "in:Security Guard,Visa Officer,Consular Officer,Interviewer,Ambassador"],
         ];
     }
 }

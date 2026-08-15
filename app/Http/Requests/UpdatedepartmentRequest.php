@@ -12,7 +12,8 @@ class UpdatedepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
 
     /**
@@ -23,7 +24,9 @@ class UpdatedepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Swaps "required" for "sometimes" to handle partial administrative modifications safely
+            "building_id" => ["sometimes", "integer", "exists:related_buildings,building_id"],
+            "department_name" => ["sometimes", "string", "max:255"],
         ];
     }
 }
