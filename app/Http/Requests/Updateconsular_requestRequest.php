@@ -5,14 +5,15 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class Updateconsular_requestRequest extends FormRequest
+class Updateconsular_requestsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
 
     /**
@@ -23,7 +24,10 @@ class Updateconsular_requestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Swaps "required" for "sometimes" to handle optional, partial file modifications
+            "citizen_id" => ["sometimes", "integer", "exists:citizens,citizen_id"],
+            "request_type" => ["sometimes", "string", "in:Passport Renewal,Birth Registration,Emergency Assistance"],
+            "status" => ["sometimes", "string", "in:Received", "In Progress", "Completed"],
         ];
     }
 }
