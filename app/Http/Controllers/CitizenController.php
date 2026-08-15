@@ -42,7 +42,7 @@ class citizenController extends Controller
             'message' => 'Citizen file profile successfully added to diplomatic records registry.',
             // 🟢 Formats the single output object using your new API resource map
             'data'    => new CitizenResource($citizenRecord)
-        ], 211); // Custom status code for tracking logs
+        ], 201); // Custom status code for tracking logs
     }
 
     /**

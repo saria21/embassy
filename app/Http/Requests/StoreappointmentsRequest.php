@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+
 class StoreappointmentsRequest extends FormRequest
 {
     /**
@@ -10,7 +12,7 @@ class StoreappointmentsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // 🟢 UNLOCKED: Allows the API to accept incoming appointment data
+        // 🟢 UNLOCKED
         return true;
     }
 
@@ -22,6 +24,12 @@ class StoreappointmentsRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // 🟢 ChatGPT Fix: Ensures the appointment is tied to a valid registered visa applicant
+            "applicant_id" => ["required", "integer", "exists:visa_applicants,applicant_id"],
+
+            // 🟢 ChatGPT Fix: Ensures the appointment is tied to a valid registered citizen profile
+            "citizen_id" => ["required", "integer", "exists:citizen,citizen_id"],
+
             // 🟢 Ensures the staff member field is provided and exists in your staff table
             "interviewer_staff_id" => ["required", "integer", "exists:staff,staff_id"],
 

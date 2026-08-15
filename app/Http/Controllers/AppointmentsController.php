@@ -42,7 +42,7 @@ class AppointmentsController extends Controller
             'message' => 'Embassy appointment booked successfully inside the scheduling calendar.',
             // 🟢 Formats the single output object using your new API resource map
             'data'    => new AppointmentResource($booking)
-        ], 211);
+        ], 201);
     }
 
     /**

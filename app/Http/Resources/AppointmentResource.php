@@ -15,19 +15,15 @@ class AppointmentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            // 🟢 Maps the unique database reservation ID for this booking
             "appointment_id" => $this->appointment_id,
-
-            // 🟢 Maps the security staff member responsible for conducting the screening
+            
+            // 🟢 ChatGPT Fix: Exposes the full relational data IDs to the API client response
+            "applicant_id" => $this->applicant_id,
+            "citizen_id" => $this->citizen_id,
+            
             "interviewer_staff_id" => $this->interviewer_staff_id,
-
-            // 🟢 Formats the official reason for the embassy visit (e.g. Visa Interview, Passport Renewal)
             "purpose_of_visit" => $this->purpose_of_visit,
-
-            // 🟢 Displays the locked calendar date for the booking
             "appointment_date" => $this->appointment_date,
-
-            // 🟢 Standard database creation and update history logs
             "created_at" => $this->created_at?->toDateTimeString(),
             "updated_at" => $this->updated_at?->toDateTimeString(),
         ];

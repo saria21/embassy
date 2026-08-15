@@ -42,7 +42,7 @@ class VisaApplicationsController extends Controller
             'message' => 'Visa application registered successfully into diplomatic queue.',
             // 🟢 Formats the single output object using your new API resource map
             'data'    => new VisaApplicationResource($application)
-        ], 211); // Custom status code for tracking tracking logs
+        ], 201); // Custom status code for tracking tracking logs
     }
 
     /**
