@@ -26,7 +26,7 @@ class UpdatecitizenRequest extends FormRequest
         return [
             // 🟢 Swaps "required" for "sometimes" for flexible edits. 
             // 🟢 The unique rule ignores the current citizen's ID so it doesn't trigger a false error when saving their own passport!
-            "passport_number" => ["sometimes", "string", "max:50", "unique:citizen,passport_number," . $this->route('citizen')?->citizen_id],
+            "passport_number" => ["sometimes", "string", "max:50", "unique:citizens,passport_number," . $this->route('citizen')?->citizen_id],
 
             // 🟢 Optional profile text edits
             "full_name" => ["sometimes", "string", "max:255"],
