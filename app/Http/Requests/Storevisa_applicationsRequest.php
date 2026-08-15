@@ -12,7 +12,8 @@ class Storevisa_applicationsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED: Allows the API route to process new visa files
+        return true;
     }
 
     /**
@@ -23,7 +24,14 @@ class Storevisa_applicationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Ensures the target applicant profile exists in your applicants table
+            "applicant_id" => ["required", "integer", "exists:visa_applicants,applicant_id"],
+
+            // 🟢 Validates that the selected visa type matches real embassy processing categories
+            "visa_type" => ["required", "string", "in:Tourist,Business,Student,Work"],
+
+            // 🟢 Enforces checking the current processing status milestone
+            "application_status" => ["required", "string", "in:Pending,Approved,Rejected"],
         ];
     }
 }

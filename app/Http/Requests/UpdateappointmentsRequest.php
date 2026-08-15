@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -12,7 +11,8 @@ class UpdateappointmentsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
 
     /**
@@ -23,7 +23,15 @@ class UpdateappointmentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Swaps "required" for "sometimes" to allow flexible, partial data modifications
+            "interviewer_staff_id" => ["sometimes", "integer", "exists:staff,staff_id"],
+
+            // 🟢 Makes the operational reason optional during modifications
+            "purpose_of_visit" => ["sometimes", "string", "in:Visa Interview,Passport Renewal,Document Attestation,Notary Services"],
+
+            // 🟢 Makes the calendar entry date field optional during a reschedule
+            "appointment_date" => ["sometimes", "date"],
         ];
     }
 }
+

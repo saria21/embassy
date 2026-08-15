@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -12,9 +11,9 @@ class Updatevisa_applicationsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,7 +22,14 @@ class Updatevisa_applicationsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Optional during updates
+            "applicant_id" => ["sometimes", "integer", "exists:visa_applicants,applicant_id"],
+
+            // 🟢 Optional during updates
+            "visa_type" => ["sometimes", "string", "in:Tourist,Business,Student,Work"],
+
+            // 🟢 Often used when changing an operational milestone from Pending to Approved!
+            "application_status" => ["sometimes", "string", "in:Pending,Approved,Rejected"],
         ];
     }
 }

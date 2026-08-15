@@ -12,7 +12,8 @@ class UpdatecitizenRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // 🟢 UNLOCKED
+        return true;
     }
 
     /**
@@ -23,7 +24,15 @@ class UpdatecitizenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // 🟢 Swaps "required" for "sometimes" for flexible edits. 
+            // 🟢 The unique rule ignores the current citizen's ID so it doesn't trigger a false error when saving their own passport!
+            "passport_number" => ["sometimes", "string", "max:50", "unique:citizen,passport_number," . $this->route('citizen')?->citizen_id],
+
+            // 🟢 Optional profile text edits
+            "full_name" => ["sometimes", "string", "max:255"],
+
+            // 🟢 Optional address location updates
+            "current_address" => ["sometimes", "string", "max:500"],
         ];
     }
 }

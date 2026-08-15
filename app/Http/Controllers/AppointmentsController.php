@@ -2,27 +2,29 @@
 
 namespace App\Http\Controllers;
 
-// Import the correct appointments model and validation request layers from your project
+// Import the correct model, validation requests, and response resources
 use App\Models\appointments;
 use App\Http\Requests\StoreappointmentsRequest;
 use App\Http\Requests\UpdateappointmentsRequest;
+use App\Http\Resources\AppointmentResource;
 use Illuminate\Http\JsonResponse;
 
 class AppointmentsController extends Controller
 {
     /**
      * GET /api/appointments
-     * Fetch and return a list of all booked embassy appointments.
+     * Fetch and return a formatted list of all booked embassy appointments.
      */
     public function index(): JsonResponse
     {
-        // Eager load the 'citizen' and 'staff' relations to prevent N+1 database queries
-        $bookings = appointments::with(['citizen', 'staff'])->get();
+        // Pull all appointments out of your master database directory
+        $bookings = appointments::all();
         
         return response()->json([
             'success' => true,
-            'data' => $bookings
-        ], 200); // Standard HTTP 200 OK status
+            // 🟢 Formats every single collection item using your teacher's resource layout
+            'data'    => AppointmentResource::collection($bookings)
+        ], 200);
     }
 
     /**
@@ -31,15 +33,16 @@ class AppointmentsController extends Controller
      */
     public function store(StoreappointmentsRequest $request): JsonResponse
     {
-        // Safe data extraction via Laravel's request validation block
+        // 🟢 Safe extraction: Only pulls data that passed through your strict Store rule gate
         $validated = $request->validated();
         $booking = appointments::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Embassy appointment booked successfully inside the scheduling calendar.',
-            'data' => $booking
-        ], 211); // Custom status code for tracking logs
+            // 🟢 Formats the single output object using your new API resource map
+            'data'    => new AppointmentResource($booking)
+        ], 211);
     }
 
     /**
@@ -48,12 +51,9 @@ class AppointmentsController extends Controller
      */
     public function show(appointments $appointments): JsonResponse
     {
-        // Dynamically load the associated relationships side-by-side
-        $appointments->load(['citizen', 'staff']);
-
         return response()->json([
             'success' => true,
-            'data' => $appointments
+            'data'    => new AppointmentResource($appointments)
         ], 200);
     }
 
@@ -63,14 +63,14 @@ class AppointmentsController extends Controller
      */
     public function update(UpdateappointmentsRequest $request, appointments $appointments): JsonResponse
     {
-        // Pull only verified column parameters to protect against mass-assignment vulnerabilities
+        // 🟢 Safe extraction: Only pulls fields permitted by your flexible Update rule pass
         $validated = $request->validated();
         $appointments->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Appointment details modified successfully in system schedule.',
-            'data' => $appointments
+            'data'    => new AppointmentResource($appointments)
         ], 200);
     }
 
@@ -80,7 +80,7 @@ class AppointmentsController extends Controller
      */
     public function destroy(appointments $appointments): JsonResponse
     {
-        // Delete the entry cleanly out of the active SQLite table view
+        // Clear the entry cleanly right out of the active SQLite table view
         $appointments->delete();
 
         return response()->json([

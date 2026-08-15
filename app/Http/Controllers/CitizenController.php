@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-// Import the correct citizen model and validation request layers from your project
+// Import the correct model, validation request layers, and output formatters
 use App\Models\citizen;
 use App\Http\Requests\StorecitizenRequest;
 use App\Http\Requests\UpdatecitizenRequest;
+use App\Http\Resources\CitizenResource;
 use Illuminate\Http\JsonResponse;
 
 class citizenController extends Controller
 {
     /**
      * GET /api/citizens
-     * Fetch and return a list of all tracked citizen profiles.
+     * Fetch and return a formatted list of all tracked citizen profiles.
      */
     public function index(): JsonResponse
     {
@@ -21,7 +22,8 @@ class citizenController extends Controller
         
         return response()->json([
             'success' => true,
-            'data' => $citizens
+            // 🟢 Formats every single collection row using your teacher's exact resource setup
+            'data'    => CitizenResource::collection($citizens)
         ], 200); // Standard HTTP 200 OK status
     }
 
@@ -31,14 +33,15 @@ class citizenController extends Controller
      */
     public function store(StorecitizenRequest $request): JsonResponse
     {
-        // Safe data extraction via Laravel's request validation block
+        // 🟢 Safe extraction: Only pulls data that passed through your strict Store rule gate
         $validated = $request->validated();
         $citizenRecord = citizen::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Citizen file profile successfully added to diplomatic records registry.',
-            'data' => $citizenRecord
+            // 🟢 Formats the single output object using your new API resource map
+            'data'    => new CitizenResource($citizenRecord)
         ], 211); // Custom status code for tracking logs
     }
 
@@ -50,7 +53,7 @@ class citizenController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $citizen
+            'data'    => new CitizenResource($citizen)
         ], 200);
     }
 
@@ -60,14 +63,14 @@ class citizenController extends Controller
      */
     public function update(UpdatecitizenRequest $request, citizen $citizen): JsonResponse
     {
-        // Pull only verified column parameters to protect against mass-assignment vulnerabilities
+        // 🟢 Safe extraction: Only pulls fields permitted by your flexible Update rule pass
         $validated = $request->validated();
         $citizen->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Citizen registration tracking records updated successfully.',
-            'data' => $citizen
+            'data'    => new CitizenResource($citizen)
         ], 200);
     }
 
@@ -77,7 +80,7 @@ class citizenController extends Controller
      */
     public function destroy(citizen $citizen): JsonResponse
     {
-        // Delete the entry cleanly out of the active SQLite table view
+        // Clear the entry cleanly right out of the active SQLite table view
         $citizen->delete();
 
         return response()->json([
@@ -86,4 +89,3 @@ class citizenController extends Controller
         ], 200);
     }
 }
-
