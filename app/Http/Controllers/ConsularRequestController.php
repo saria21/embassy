@@ -1,35 +1,88 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+// 🟢 FIX: Imported the correct singular model matching your sidebar definition
+use App\Models\consular_request;
+use App\Http\Requests\Storeconsular_requestsRequest;
+use App\Http\Requests\Updateconsular_requestsRequest;
+use App\Http\Resources\ConsularRequestResource;
+use Illuminate\Http\JsonResponse;
 
-class ConsularRequestResource extends JsonResource
+class ConsularRequestController extends Controller
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
+     * GET /api/consular-requests
+     * Fetch and return a formatted list of all registered consular paperwork entries.
      */
-    public function toArray(Request $request): array
+    public function index(): JsonResponse
     {
-        return [
-            // 🟢 Maps the unique primary tracking index for this bureaucratic request file
-            "id" => $this->id,
+        // 🟢 FIX: Uses the true singular model class definition
+        $requests = consular_request::all();
+        
+        return response()->json([
+            'success' => true,
+            'data'    => ConsularRequestResource::collection($requests)
+        ], 200); 
+    }
 
-            // 🟢 Exposes the relational foreign key connecting this file to a registered citizen profile
-            "citizen_id" => $this->citizen_id,
+    /**
+     * POST /api/consular-requests
+     * Validate and create a new consular processing file entry.
+     */
+    public function store(Storeconsular_requestsRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        
+        // 🟢 FIX: Uses the true singular model class definition
+        $consularRecord = consular_request::create($validated);
 
-            // 🟢 Formats the paperwork category descriptor (e.g. Passport Renewal, Birth Registration)
-            "request_type" => $this->request_type,
+        return response()->json([
+            'success' => true,
+            'message' => 'Consular paperwork tracking file registered successfully into system directory.',
+            'data'    => new ConsularRequestResource($consularRecord)
+        ], 201); 
+    }
 
-            // 🟢 Captures the current processing operational status (e.g. Received, In Progress, Completed)
-            "status" => $this->status,
+    /**
+     * GET /api/consular-requests/{id}
+     * Display tracking details for one singular targeted paperwork record.
+     */
+    public function show(consular_request $consular_request): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data'    => new ConsularRequestResource($consular_request)
+        ], 200);
+    }
 
-            // 🟢 Standard database auditing timestamps parsed into clear datetime string segments
-            "created_at" => $this->created_at?->toDateTimeString(),
-            "updated_at" => $this->updated_at?->toDateTimeString(),
-        ];
+    /**
+     * PUT/PATCH /api/consular-requests/{id}
+     * Update processing milestones or request categories on a live consular entry.
+     */
+    public function update(Updateconsular_requestsRequest $request, consular_request $consular_request): JsonResponse
+    {
+        $validated = $request->validated();
+        $consular_request->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Consular application processing metrics modified successfully.',
+            'data'    => new ConsularRequestResource($consular_request)
+        ], 200);
+    }
+
+    /**
+     * DELETE /api/consular-requests/{id}
+     * Completely remove a targeted paperwork record from background tracking.
+     */
+    public function destroy(consular_request $consular_request): JsonResponse
+    {
+        $consular_request->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Consular processing tracking file removed permanently from records.'
+        ], 200);
     }
 }
